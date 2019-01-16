@@ -1,0 +1,10 @@
+.main-content {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    .canvas-container {
+        display: inline-block;
+        margin: 10px;
+        .canvas-item {
+            margin: -3px;
+        }
+    }
+}
