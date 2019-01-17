@@ -1,6 +1,7 @@
 import { Model } from './includes/Model';
 import SnakeGame from './includes/SnakeGame';
 import { settings } from './includes/settings';
+import * as tf from '@tensorflow/tfjs'
 import './styles/styles.scss'
 
 // Key being pressed.
