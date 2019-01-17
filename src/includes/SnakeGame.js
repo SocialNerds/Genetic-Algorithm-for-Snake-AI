@@ -1,4 +1,6 @@
 import Food from "./Food";
+import Snake from "./Snake";
+import { settings } from "./settings";
 
 class SnakeGame {
 
@@ -8,6 +10,7 @@ class SnakeGame {
         let canvasContainer = document.getElementById(id)
         this.canvasContainer = canvasContainer === null ? this.createCanvas() : canvasContainer;
         this.food = new Food(id);
+        this.snake = new Snake(id);
     }
 
     getCanvas() {
@@ -18,8 +21,8 @@ class SnakeGame {
         let canvas = document.createElement('canvas');
         canvas.id = this.id;
         canvas.className = 'canvas-item';
-        canvas.width = 200;
-        canvas.height = 200;
+        canvas.width = settings.canvasWidth;
+        canvas.height = settings.canvasHeight;
 
         let canvasContainer = document.createElement('div');
         canvasContainer.id = `container_${this.id}`;
@@ -27,38 +30,35 @@ class SnakeGame {
         document.getElementById('main_content').appendChild(canvasContainer);
         canvasContainer.appendChild(canvas);
 
-        this.redraw();
+        this.drawCanvas();
 
         return canvasContainer;
     }
 
-    redraw() {
+    drawCanvas() {
         let ctx = this.getCanvas().getContext('2d');
         ctx.fillStyle = 'rgba(0, 0, 0, 1)';
-        ctx.fillRect(0, 0, 200, 200);
-    }
-
-    getFoodEaten() {
-        if (this.food.getEaten) {
-            return true;
-        }
-    }
-
-    createFood() {
-        if (this.getFoodEaten()) {
-            this.food.reset();
-        }
-    }
-
-    setFoodEaten() {
-        this.food.setEaten();
+        ctx.fillRect(0, 0, settings.canvasWidth, settings.canvasHeight);
     }
 
     drawFood() {
         let ctx = this.getCanvas().getContext('2d');
         ctx.fillStyle = 'red';
-        ctx.fillRect(this.food.x, this.food.y, this.food.step / 2, this.food.step / 2);
+        ctx.fillRect(this.food.x, this.food.y, settings.step, settings.step);
         ctx.stroke();
+    }
+
+    drawSnake() {
+        let ctx = this.getCanvas().getContext('2d');
+        ctx.fillStyle = 'white';
+        ctx.fillRect(this.snake.x, this.snake.y, settings.step, settings.step);
+        ctx.stroke();
+
+        // Draw queue.
+        this.snake.queue.forEach(queueItem => {
+            ctx.fillRect(queueItem[0], queueItem[1], settings.step, settings.step);
+            ctx.stroke();
+        });
     }
 }
 
