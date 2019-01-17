@@ -1,12 +1,39 @@
-import { model } from './includes/model';
-const CanvasContainer = require('./includes/canvas');
+import { Model } from './includes/Model';
+import Food from './includes/Food';
 import './styles/styles.scss'
+import SnakeGame from './includes/SnakeGame';
 
-// Create canvases.
-let canvasArray = [];
+// Create games.
+let snakeGameArray = [];
 for (let i = 0; i < 10; i++) {
-    let currentCanvas = new CanvasContainer(`canvas${i}`);
-    canvasArray.push(currentCanvas.create());
+    let currentSnakeGame = new SnakeGame(`canvas_${i}`);
+    snakeGameArray.push(currentSnakeGame);
+    currentSnakeGame.drawFood();
 }
 
-console.log(canvasArray);
+// let gameLoop;
+// window.onload = () => {
+//     gameLoop = setInterval(game, 1000 / 16.67);
+// };
+
+// function game() {
+
+//     redrawCanvases();
+
+//     drawFood();
+// }
+
+// function redrawCanvases() {
+//     canvasArray.forEach(currentCanvas => {
+//         currentCanvas.redraw();
+//     });
+// }
+
+// function drawFood() {
+//     canvasArray.forEach(currentCanvas => {
+//         let canvasFood = new Food(currentCanvas.canvas);
+//         canvasFood.draw();
+//     });
+// }
+
+// console.log(canvasArray);
