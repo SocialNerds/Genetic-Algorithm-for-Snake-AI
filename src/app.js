@@ -1,7 +1,6 @@
 import { Model } from './includes/Model';
 import SnakeGame from './includes/SnakeGame';
 import { settings } from './includes/settings';
-import * as tf from '@tensorflow/tfjs'
 import './styles/styles.scss'
 
 // Key being pressed.
@@ -26,12 +25,18 @@ window.onload = () => {
 
 function game() {
     snakeGameArray.forEach(currentSnakeGame => {
-        let direction = getDirection();
-        if (direction != 0) {
-            currentSnakeGame.snake.setDirection(direction);
-        }
         currentSnakeGame.drawCanvas();
         currentSnakeGame.drawFood();
+
+        if (settings.ai) {
+            let direction = currentSnakeGame.model.predict(currentSnakeGame.getState());
+            currentSnakeGame.snake.setDirection(direction);
+        } else {
+            let direction = getDirection();
+            if (direction != 0) {
+                currentSnakeGame.snake.setDirection(direction);
+            }
+        }
         
         if (currentSnakeGame.snake.getCapture(currentSnakeGame.food.x, currentSnakeGame.food.y)) {
             currentSnakeGame.snake.expand(currentSnakeGame.food.x, currentSnakeGame.food.y);
@@ -51,20 +56,15 @@ function game() {
 
 function getDirection() {
     let direction = 0;
-    if (settings.ai) {
-
+    if (keyState[38]) {
+        direction = 1;
+    } else if (keyState[39]) {
+        direction = 2;
+    } else if (keyState[40]) {
+        direction = 3;
+    } else if (keyState[37]) {
+        direction = 4;
     }
-    else {
-        if (keyState[38]) {
-            direction = 1;
-        } else if (keyState[39]) {
-            direction = 2;
-        } else if (keyState[40]) {
-            direction = 3;
-        } else if (keyState[37]) {
-            direction = 4;
-        }
-        keyState = {};
-    }
+    keyState = {};
     return direction;
 }

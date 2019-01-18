@@ -62,7 +62,10 @@ class Snake {
     }
 
     expand() {
-        this.queue.unshift([this.x, this.y]);
+        this.queue.unshift({
+            x: this.x,
+            y: this.y
+        });
     }
 
     moveQueue() {
@@ -70,7 +73,10 @@ class Snake {
             return;
         }
         if (this.queue.length) {
-            this.queue.unshift([this.x, this.y]);
+            this.queue.unshift({
+                x: this.x,
+                y: this.y
+            });
             this.queue.pop();
         }
     }

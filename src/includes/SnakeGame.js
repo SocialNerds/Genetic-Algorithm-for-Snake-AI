@@ -1,16 +1,18 @@
 import Food from "./Food";
 import Snake from "./Snake";
+import Model from "./Model";
 import { settings } from "./settings";
 
 class SnakeGame {
 
     constructor(id) {
         this.id = id;
-        
+
         let canvasContainer = document.getElementById(id)
         this.canvasContainer = canvasContainer === null ? this.createCanvas() : canvasContainer;
         this.food = new Food(id);
         this.snake = new Snake(id);
+        this.model = new Model(id);
     }
 
     getCanvas() {
@@ -56,9 +58,38 @@ class SnakeGame {
 
         // Draw queue.
         this.snake.queue.forEach(queueItem => {
-            ctx.fillRect(queueItem[0], queueItem[1], settings.step, settings.step);
+            ctx.fillRect(queueItem.x, queueItem.y, settings.step, settings.step);
             ctx.stroke();
         });
+    }
+
+    /**
+     * Returns an array with the state of the current game.
+     */
+    getState() {
+        let state = [];
+        for (let y = 0; y < settings.canvasHeight; y += settings.step) {
+            for (let x = 0; x < settings.canvasWidth; x += settings.step) {
+                let currentType = settings.state.black;
+                if (this.snake.x == x && this.snake.y == y) {
+                    currentType = settings.state.snake;
+                }
+                if (this.food.x == x && this.food.y == y) {
+                    currentType = settings.state.food;
+                }
+
+                for (let i = 0; i < this.snake.queue.length; i++) {
+                    if (this.snake.queue[0][x] == x && this.snake.queue[0][y] == y) {
+                        currentType = settings.state.queue;
+                        break;
+                    }
+                }
+
+                state.push(currentType);
+            }
+        }
+
+        return state;
     }
 }
 
