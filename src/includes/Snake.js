@@ -2,14 +2,14 @@ import { settings } from "./settings";
 
 class Snake {
 
-    constructor(canvasId) {
-        this.canvas = document.getElementById(canvasId);
+    constructor() {
         this.x = 0;
         this.y = 0;
         this.queue = [];
         // 1, 2, 3, 4.
         this.direction = Math.floor(Math.random() * 4) + 1;
         this.crashed = false;
+        this.score = 0;
     }
 
     move() {
@@ -18,14 +18,14 @@ class Snake {
         }
         if (this.direction == 1) {
             if (this.y <= 0) {
-                this.y = settings.canvasHeight - settings.step;
+                this.y = settings.canvasSize - settings.step;
             }
             else {
                 this.y -= settings.step;
             }
         }
         else if (this.direction == 2) {
-            if (this.x >= settings.canvasWidth - settings.step) {
+            if (this.x >= settings.canvasSize - settings.step) {
                 this.x = 0;
             }
             else {
@@ -33,7 +33,7 @@ class Snake {
             }
         }
         else if (this.direction == 3) {
-            if (this.y >= settings.canvasHeight  - settings.step) {
+            if (this.y >= settings.canvasSize  - settings.step) {
                 this.y = 0;
             }
             else {
@@ -42,7 +42,7 @@ class Snake {
         }
         else if (this.direction == 4) {
             if (this.x <= 0) {
-                this.x = settings.canvasWidth - settings.step;
+                this.x = settings.canvasSize - settings.step;
             }
             else {
                 this.x -= settings.step;
@@ -66,6 +66,7 @@ class Snake {
             x: this.x,
             y: this.y
         });
+        this.score++;
     }
 
     moveQueue() {
@@ -86,8 +87,8 @@ class Snake {
             if (this.detectCollision(
                 this.x,
                 this.y,
-                this.queue[i][0],
-                this.queue[i][1]
+                this.queue[i].x,
+                this.queue[i].y
             )) {
                 return true;
             }
@@ -101,6 +102,10 @@ class Snake {
 
     getCrashed() {
         return this.crashed;
+    }
+
+    getScore() {
+        return this.score;
     }
 
     setDirection(direction) {

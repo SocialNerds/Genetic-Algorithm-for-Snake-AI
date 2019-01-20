@@ -1,21 +1,24 @@
 import * as tf from '@tensorflow/tfjs';
-import { settings } from "./settings";
+import { settings } from './settings';
 
 class Model {
-    constructor(canvasId) {
-        this.canvasId = canvasId;
-        this.model = new tf.Sequential();
-
-        this.inputNum = settings.canvasWidth * settings.canvasHeight / settings.step / settings.step * 4;
-        
-        this.model.add(tf.layers.dense({units: 256, inputShape: [this.inputNum]}));
-        this.model.add(tf.layers.dense({units: 256, inputShape: [256]}));
-        this.model.add(tf.layers.dense({units: 4, inputShape: [256]}));
+    constructor() {
+        let outputLayerNodes = 4;
+        this.inputLayerNodes = settings.canvasSize * settings.canvasSize / settings.step / settings.step * outputLayerNodes;
+        this.inputWeights = tf.randomNormal([this.inputLayerNodes, settings.hiddenLayerNodes]);
+        this.outputWeights = tf.randomNormal([settings.hiddenLayerNodes, outputLayerNodes]);
     }
 
     predict(data) {
-        let prediction = this.model.predict(this.convert(data));
-        return tf.argMax(prediction, 1).dataSync()[0] + 1;
+        let output;
+        tf.tidy(() => {
+            let inputLayer = this.convert(data);
+            let hiddenLayer = inputLayer.matMul(this.inputWeights).sigmoid();
+            let outputLayer = hiddenLayer.matMul(this.outputWeights).sigmoid();
+            output = tf.argMax(outputLayer, 1).dataSync()[0] + 1;
+        });
+
+        return output;
     }
 
     convert(data) {
@@ -34,9 +37,8 @@ class Model {
             }
         });
 
-        return tf.tensor2d(onehot, [1, this.inputNum]);
+        return tf.tensor2d(onehot, [1, this.inputLayerNodes]);
     }
 }
-
 
 export default Model;

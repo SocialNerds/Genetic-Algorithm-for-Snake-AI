@@ -5,62 +5,70 @@ import { settings } from "./settings";
 
 class SnakeGame {
 
-    constructor(id) {
-        this.id = id;
+    constructor() {
+        this.id = this.makeId();
+        this.context = null;
 
-        let canvasContainer = document.getElementById(id)
-        this.canvasContainer = canvasContainer === null ? this.createCanvas() : canvasContainer;
-        this.food = new Food(id);
-        this.snake = new Snake(id);
-        this.model = new Model(id);
+        let canvasContainer = document.getElementById(this.id)
+        this.canvasContainer = canvasContainer === null ? this.createElements() : canvasContainer;
+        this.food = new Food();
+        this.snake = new Snake();
+        this.model = new Model();
     }
 
     getCanvas() {
         return document.getElementById(this.id)
     }
 
-    createCanvas() {
-        let canvas = document.createElement('canvas');
-        canvas.id = this.id;
-        canvas.className = 'canvas-item';
-        canvas.width = settings.canvasWidth;
-        canvas.height = settings.canvasHeight;
-
+    createElements() {
         let canvasContainer = document.createElement('div');
         canvasContainer.id = `container_${this.id}`;
         canvasContainer.className = 'canvas-container';
         document.getElementById('main_content').appendChild(canvasContainer);
-        canvasContainer.appendChild(canvas);
 
+        let canvas = document.createElement('canvas');
+        canvas.id = this.id;
+        canvas.className = 'canvas-item';
+        canvas.width = settings.canvasSize;
+        canvas.height = settings.canvasSize;
+        let canvasWrapper = document.createElement('div');
+        canvasWrapper.className = 'canvas-wrapper';
+        canvasWrapper.appendChild(canvas);
+        canvasContainer.appendChild(canvasWrapper);
+        this.context = canvas.getContext('2d');
         this.drawCanvas();
+
+        let info = document.createElement('div');
+        info.id = `info_${this.id}`;
+        info.className = 'info';
+        canvasContainer.appendChild(info);
 
         return canvasContainer;
     }
 
     drawCanvas() {
-        let ctx = this.getCanvas().getContext('2d');
-        ctx.fillStyle = 'rgba(0, 0, 0, 1)';
-        ctx.fillRect(0, 0, settings.canvasWidth, settings.canvasHeight);
+        this.context.fillStyle = 'rgba(0, 0, 0, 1)';
+        this.context.fillRect(0, 0, settings.canvasSize, settings.canvasSize);
     }
 
     drawFood() {
-        let ctx = this.getCanvas().getContext('2d');
-        ctx.fillStyle = 'red';
-        ctx.fillRect(this.food.x, this.food.y, settings.step, settings.step);
-        ctx.stroke();
+        this.context.fillStyle = 'red';
+        this.context.fillRect(this.food.x, this.food.y, settings.step, settings.step);
     }
 
     drawSnake() {
-        let ctx = this.getCanvas().getContext('2d');
-        ctx.fillStyle = 'white';
-        ctx.fillRect(this.snake.x, this.snake.y, settings.step, settings.step);
-        ctx.stroke();
+        this.context.fillStyle = 'white';
+        this.context.fillRect(this.snake.x, this.snake.y, settings.step, settings.step);
 
         // Draw queue.
         this.snake.queue.forEach(queueItem => {
-            ctx.fillRect(queueItem.x, queueItem.y, settings.step, settings.step);
-            ctx.stroke();
+            this.context.fillRect(queueItem.x, queueItem.y, settings.step, settings.step);
         });
+    }
+
+    updateInfo() {
+        let info = document.getElementById(`info_${this.id}`);
+        info.innerHTML = `Score: ${this.snake.getScore()}<br>Crashed: ${this.snake.getCrashed()}`;
     }
 
     /**
@@ -68,8 +76,8 @@ class SnakeGame {
      */
     getState() {
         let state = [];
-        for (let y = 0; y < settings.canvasHeight; y += settings.step) {
-            for (let x = 0; x < settings.canvasWidth; x += settings.step) {
+        for (let y = 0; y < settings.canvasSize; y += settings.step) {
+            for (let x = 0; x < settings.canvasSize; x += settings.step) {
                 let currentType = settings.state.black;
                 if (this.snake.x == x && this.snake.y == y) {
                     currentType = settings.state.snake;
@@ -79,7 +87,7 @@ class SnakeGame {
                 }
 
                 for (let i = 0; i < this.snake.queue.length; i++) {
-                    if (this.snake.queue[0][x] == x && this.snake.queue[0][y] == y) {
+                    if (this.snake.queue[0].x == x && this.snake.queue[0].y == y) {
                         currentType = settings.state.queue;
                         break;
                     }
@@ -90,6 +98,18 @@ class SnakeGame {
         }
 
         return state;
+    }
+
+    makeId() {
+        var text = '';
+        var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+        do {
+            for (var i = 0; i < 15; i++)
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+        } while (document.getElementById(text) !== null)
+
+        return text;
     }
 }
 

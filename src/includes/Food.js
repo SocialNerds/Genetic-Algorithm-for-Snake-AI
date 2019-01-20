@@ -2,13 +2,12 @@ import { settings } from "./settings";
 
 class Food {
 
-    constructor(canvasId) {
-        this.canvas = document.getElementById(canvasId);
+    constructor() {
         this.reset();
     }
 
     reset() {
-        let grid_number = settings.canvasWidth / settings.step;
+        let grid_number = settings.canvasSize / settings.step;
         this.x = Math.floor(Math.random() * grid_number) * settings.step;
         this.y = Math.floor(Math.random() * grid_number) * settings.step;
     }
