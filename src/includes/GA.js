@@ -21,13 +21,14 @@ class GA {
         });
 
         snakeGameArrayValues = this.sortGames(snakeGameArrayValues);
-        
-        // The top two games.
+
+        // The top games.
         let topSnakeGames = []
         snakeGameArray.forEach(currentSnakeGame => {
-            if (snakeGameArrayValues[0].id == currentSnakeGame.id
-                || snakeGameArrayValues[1].id == currentSnakeGame.id) {
-                topSnakeGames.push(currentSnakeGame);
+            for (let i = 0; i < settings.topParentsGenePool; i++) {
+                if (snakeGameArrayValues[i].id == currentSnakeGame.id) {
+                    topSnakeGames.push(currentSnakeGame);
+                }
             }
         });
         
@@ -41,14 +42,26 @@ class GA {
     }
 
     crossover(topSnakeGames) {
-        let parentInputWeightsA = topSnakeGames[0].model.inputWeights.dataSync();
-        let parentOutputWeightsA = topSnakeGames[0].model.outputWeights.dataSync();
-        let parentInputWeightsB = topSnakeGames[1].model.inputWeights.dataSync();
-        let parentOutputWeightsB = topSnakeGames[1].model.outputWeights.dataSync();
+        // Create a gene pool.
+        let weightsArray = [];
+        for (let i = 0; i < settings.topParentsGenePool; i++) {
+            let parentInputWeights = topSnakeGames[i].model.inputWeights.dataSync();
+            let parentOutputWeights = topSnakeGames[i].model.outputWeights.dataSync();
+            for (let j = 0; j < settings.topParentsGenePool - i; j++) {
+                weightsArray.push({
+                    inputWeights: parentInputWeights,
+                    outputWeights: parentOutputWeights
+                });
+            }
+        }
 
-        let mid = Math.floor(Math.random() * parentInputWeightsA.length);
-        let childInputWeights = [...parentInputWeightsA.slice(0, mid), ...parentInputWeightsB.slice(mid, parentInputWeightsB.length)];
-        let childOutputWeights = [...parentOutputWeightsA.slice(0, mid), ...parentOutputWeightsB.slice(mid, parentOutputWeightsB.length)];
+        // Get weights from gene pool.
+        let parentWeightsIndexA = Math.floor(Math.random() * weightsArray.length);
+        let parentWeightsIndexB = Math.floor(Math.random() * weightsArray.length);
+
+        let mid = Math.floor(Math.random() * weightsArray[parentWeightsIndexA].inputWeights.length);
+        let childInputWeights = [...weightsArray[parentWeightsIndexA].inputWeights.slice(0, mid), ...weightsArray[parentWeightsIndexB].inputWeights.slice(mid, weightsArray[parentWeightsIndexB].inputWeights.length)];
+        let childOutputWeights = [...weightsArray[parentWeightsIndexA].outputWeights.slice(0, mid), ...weightsArray[parentWeightsIndexB].outputWeights.slice(mid, weightsArray[parentWeightsIndexB].outputWeights.length)];
 
         let childSnakeGame = new SnakeGame();
 
@@ -61,34 +74,47 @@ class GA {
         return childSnakeGame;
     }
 
-    mutate(childSnakeGame) {
+    mutate(snakeGame) {
+        let newSnakeGame = new SnakeGame();
 
-        let mutatedSnakeGame = new SnakeGame();
+        let mutatedInputWeights = snakeGame.model.inputWeights.dataSync().map(fn);
+        let inputWeightsShape = snakeGame.model.inputWeights.shape;
+        newSnakeGame.model.inputWeights = tf.tensor(mutatedInputWeights, inputWeightsShape);
 
-        let mutatedInputWeights = childSnakeGame.model.inputWeights.dataSync().map(fn);
-        let inputWeightsShape = childSnakeGame.model.inputWeights.shape;
-        mutatedSnakeGame.model.inputWeights = tf.tensor(mutatedInputWeights, inputWeightsShape);
+        let mutatedOutputWeights = snakeGame.model.outputWeights.dataSync().map(fn);
+        let outputWeightsShape = snakeGame.model.outputWeights.shape;
+        newSnakeGame.model.outputWeights = tf.tensor(mutatedOutputWeights, outputWeightsShape);
 
-        let mutatedOutputWeights = childSnakeGame.model.outputWeights.dataSync().map(fn);
-        let outputWeightsShape = childSnakeGame.model.outputWeights.shape;
-        mutatedSnakeGame.model.outputWeights = tf.tensor(mutatedOutputWeights, outputWeightsShape);
-
-        return mutatedSnakeGame;
+        return newSnakeGame;
     }
 
-    reproduce(childSnakeGame) {
-        let newGenerationSnakeGames = [];
-        for (let i = 0; i < settings.popupation - 10; i++) {
-            newGenerationSnakeGames.push(this.mutate(childSnakeGame));
+    createNewGeneration(snakeGameArray) {
+        let topSnakeGames = this.getTopParents(snakeGameArray);
+
+        let newGenerationSnakeGameArray = [];
+        // Create games from current top game.
+        for (let i = 0; i < settings.topSnakeChildren; i++) {
+            newGenerationSnakeGameArray.push(this.mutate(topSnakeGames[0]));
         }
 
-        // Also create 10 completelly random to avoid bad genome evolution.
-        for (let i = 0; i < 10; i++) {
-            newGenerationSnakeGames.push(new SnakeGame());
+        // Create completely new games.
+        for (let i = 0; i < settings.randomSnakeChildren; i++) {
+            newGenerationSnakeGameArray.push(new SnakeGame());
+        }
+        
+        // Create crossovers from top games.
+        for (let i = 0; i < settings.popupation - settings.topSnakeChildren - settings.randomSnakeChildren; i++) {
+            let childSnakeGame = this.crossover(topSnakeGames);
+            if (Math.random() < 0.5) {
+                let oldChildSnakeGame = childSnakeGame;
+                childSnakeGame = this.mutate(childSnakeGame);
+                this.helper.destroyGame(oldChildSnakeGame);
+            }
+            newGenerationSnakeGameArray.push(childSnakeGame);
         }
 
-        this.helper.destroyGame(childSnakeGame);
-        return newGenerationSnakeGames;
+        this.helper.destroyCurrentGames(snakeGameArray);
+        return newGenerationSnakeGameArray;
     }
 
     // randomGaussian(x) {

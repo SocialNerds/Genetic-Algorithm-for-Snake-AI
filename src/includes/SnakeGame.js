@@ -8,11 +8,12 @@ class SnakeGame {
     constructor() {
         this.id = this.makeId();
         this.context = null;
+        this.visible = false;
 
         let canvasContainer = document.getElementById(this.id)
         this.canvasContainer = canvasContainer === null ? this.createElements() : canvasContainer;
-        this.food = new Food();
         this.snake = new Snake();
+        this.food = new Food(this.snake);
         this.model = new Model();
     }
 
@@ -23,7 +24,7 @@ class SnakeGame {
     createElements() {
         let canvasContainer = document.createElement('div');
         canvasContainer.id = `container_${this.id}`;
-        canvasContainer.className = 'canvas-container';
+        canvasContainer.className = 'canvas-container hidden';
         document.getElementById('main_content').appendChild(canvasContainer);
 
         let canvas = document.createElement('canvas');
@@ -46,6 +47,16 @@ class SnakeGame {
         return canvasContainer;
     }
 
+    /**
+     * Set current skake game visible or not.
+     * 
+     * @param bool visibility 
+     *  True if visible.
+     */
+    setVisible() {
+        this.canvasContainer.classList.remove('hidden');
+    }
+
     drawCanvas() {
         this.context.fillStyle = 'rgba(0, 0, 0, 1)';
         this.context.fillRect(0, 0, settings.canvasSize, settings.canvasSize);
@@ -57,11 +68,12 @@ class SnakeGame {
     }
 
     drawSnake() {
-        this.context.fillStyle = 'white';
+        this.context.fillStyle = 'blue';
         this.context.fillRect(this.snake.x, this.snake.y, settings.step, settings.step);
 
         // Draw queue.
         this.snake.queue.forEach(queueItem => {
+            this.context.fillStyle = 'white';
             this.context.fillRect(queueItem.x, queueItem.y, settings.step, settings.step);
         });
     }
@@ -76,28 +88,122 @@ class SnakeGame {
      */
     getState() {
         let state = [];
-        for (let y = 0; y < settings.canvasSize; y += settings.step) {
-            for (let x = 0; x < settings.canvasSize; x += settings.step) {
-                let currentType = settings.state.black;
-                if (this.snake.x == x && this.snake.y == y) {
-                    currentType = settings.state.snake;
-                }
-                if (this.food.x == x && this.food.y == y) {
-                    currentType = settings.state.food;
-                }
 
-                for (let i = 0; i < this.snake.queue.length; i++) {
-                    if (this.snake.queue[0].x == x && this.snake.queue[0].y == y) {
-                        currentType = settings.state.queue;
-                        break;
-                    }
-                }
+        // Helper variable to get state of snake's adjacent grid boxes.
+        let currentState = null;
 
-                state.push(currentType);
+        // Get snake coordinates.
+        state.push([this.snake.x, this.snake.y]);
+
+        // Set a generic dicection of the food in relation to the snake (head).
+        state.push([
+            this.snake.x > this.food.x ? -1 : 1,
+            this.snake.y > this.food.y ? -1 : 1
+        ]);
+
+        // Get what is above.
+        currentState = null;
+        if (this.snake.y >= settings.step) {
+            for (let i = this.snake.y - settings.step; i >= 0; i -= settings.step) {
+                currentState = this.getStateOfGridBox(this.snake.x, i);
+                if (currentState !== null) {
+                    state.push([currentState, this.snake.y - i - settings.step]);
+                    break;
+                }
             }
+        }
+        if (this.snake.y == 0) {
+            currentState = this.getStateOfGridBox(this.snake.x, settings.canvasSize - settings.step);
+            if (currentState !== null) {
+                state.push([currentState, 0]);
+            }
+        }
+        if (currentState === null) {
+            state.push([0, 0]);
+        }
+
+        // Get what is right of the snake.
+        currentState = null;
+        if (this.snake.x < settings.canvasSize - settings.step) {
+            for (let i = this.snake.x + settings.step; i < settings.canvasSize; i += settings.step) {
+                currentState = this.getStateOfGridBox(i, this.snake.y);
+                if (currentState !== null) {
+                    state.push([currentState, i - this.snake.x - settings.step]);
+                    break;
+                }
+            }
+        }
+        if (this.snake.x == settings.canvasSize - settings.step) {
+            currentState = this.getStateOfGridBox(0, this.snake.y);
+            if (currentState !== null) {
+                state.push([currentState, 0]);
+            }
+        }
+        if (currentState === null) {
+            state.push([0, 0]);
+        }
+
+        // Get what is below the snake.
+        currentState = null;
+        if (this.snake.y < settings.canvasSize - settings.step) {
+            for (let i = this.snake.y + settings.step; i < settings.canvasSize; i += settings.step) {
+                currentState = this.getStateOfGridBox(this.snake.x, i);
+                if (currentState !== null) {
+                    state.push([currentState, i - this.snake.y - settings.step]);
+                    break;
+                }
+            }
+        }
+        if (this.snake.y == settings.canvasSize - settings.step) {
+            currentState = this.getStateOfGridBox(this.snake.x, 0);
+            if (currentState !== null) {
+                state.push([currentState, 0]);
+            }
+        }
+        if (currentState === null) {
+            state.push([0, 0]);
+        }
+
+        // Get what is left of the snake.
+        currentState = null;
+        if (this.snake.x >= settings.step) {
+            for (let i = this.snake.x - settings.step; i >= 0; i -= settings.step) {
+                currentState = this.getStateOfGridBox(i, this.snake.y);
+                if (currentState !== null) {
+                    state.push([currentState, this.snake.x - i - settings.step]);
+                    break;
+                }
+            }
+        }
+        if (this.snake.x == 0) {
+            currentState = this.getStateOfGridBox(settings.canvasSize - settings.step, this.snake.y);
+            if (currentState !== null) {
+                state.push([currentState, 0]);
+            }
+        }
+        if (currentState === null) {
+            state.push([0, 0]);
         }
 
         return state;
+    }
+
+    getStateOfGridBox(x, y) {
+        if (this.snake.x == x && this.snake.y == y) {
+            return settings.state.snake;
+        }
+
+        if (this.food.x == x && this.food.y == y) {
+            return settings.state.food;
+        }
+
+        for (let i = 0; i < this.snake.queue.length; i++) {
+            if (this.snake.queue[i].x == x && this.snake.queue[i].y == y) {
+                return settings.state.queue;
+            }
+        }
+
+        return null;
     }
 
     makeId() {

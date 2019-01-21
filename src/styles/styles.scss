@@ -35,6 +35,10 @@ body {
         margin: $generic_gutter;
         grid-template-columns: 1fr 1fr;
         background-color: $container_background_color;
+        transition: all 0.5s ease-in-out;
+        &.hidden {
+            display: none;
+        }
         .canvas-wrapper {
             display: inline-block;
             canvas {

@@ -13,12 +13,15 @@ let keyState = {};
 // Initialize.
 let helper = new Helper();
 let snakeGameArray = helper.initializeGames();
+let snakeGameVisibleArray = helper.getRandomVisibleSnakeGames(snakeGameArray);
 
 // Genetic algorith.
 let ga = new GA();
 
 let currentFrame = 0;
 let generation = 1;
+
+let previousGenetationScore = 0;
 
 let gameLoop;
 window.onload = () => {
@@ -48,9 +51,9 @@ function game() {
     if (currentFrame < settings.gameFrames) {
         snakeGameArray.forEach(currentSnakeGame => {
             if (!currentSnakeGame.snake.getCrashed()) {
-                currentSnakeGame.drawCanvas();
-                currentSnakeGame.drawFood();
-        
+                // currentSnakeGame.drawCanvas();
+                // currentSnakeGame.drawFood();
+
                 if (settings.ai) {
                     let direction = currentSnakeGame.model.predict(currentSnakeGame.getState());
                     currentSnakeGame.snake.setDirection(direction);
@@ -60,7 +63,7 @@ function game() {
                         currentSnakeGame.snake.setDirection(direction);
                     }
                 }
-                
+
                 if (currentSnakeGame.snake.getCapture(currentSnakeGame.food.x, currentSnakeGame.food.y)) {
                     currentSnakeGame.snake.expand(currentSnakeGame.food.x, currentSnakeGame.food.y);
                     currentSnakeGame.food.reset();
@@ -69,25 +72,40 @@ function game() {
                     currentSnakeGame.snake.moveQueue();
                 }
                 currentSnakeGame.snake.move();
-                
+
                 if (!currentSnakeGame.snake.getCrashed() && currentSnakeGame.snake.getTailCrash()) {
                     currentSnakeGame.snake.setCrashed();
                 }
-                currentSnakeGame.drawSnake();
+                // currentSnakeGame.drawSnake();
                 currentSnakeGame.updateInfo();
+
+                // if (currentSnakeGame.snake.getCrashed()) {
+                //     currentSnakeGame.drawCanvas();
+                //     currentSnakeGame.drawFood();
+                //     currentSnakeGame.drawSnake();
+                //     console.log(currentSnakeGame);
+                //     console.log(currentSnakeGame.getState());
+                //     console.log(currentSnakeGame.model.convert(currentSnakeGame.getState()).dataSync());
+                //     stopGame();
+                // }
             }
         });
-        helper.updateMainInfo(generation, currentFrame, snakeGameArray)
+
+        snakeGameVisibleArray.forEach(currentSnakeGame => {
+            currentSnakeGame.drawCanvas();
+            currentSnakeGame.drawFood();
+            currentSnakeGame.drawSnake();
+        });
+        
+        helper.updateMainInfo(generation, currentFrame, snakeGameArray, previousGenetationScore);
         currentFrame++;
     } else {
         currentFrame = 0;
         stopGame();
-        let topSnakeGames = ga.getTopParents(snakeGameArray);
-
-        helper.destroyCurrentGames(snakeGameArray);
-
-        let childSnakeGame = ga.crossover(topSnakeGames);
-        snakeGameArray = ga.reproduce(childSnakeGame);
+        // Keep total score for the next generation.
+        previousGenetationScore = helper.getTotalScore(snakeGameArray);
+        snakeGameArray = ga.createNewGeneration(snakeGameArray);
+        snakeGameVisibleArray = helper.getRandomVisibleSnakeGames(snakeGameArray);
         startGame();
         generation++;
     }
