@@ -12,6 +12,8 @@ class Food {
     constructor(snake) {
         this.snake = snake;
         this.gridNumber = settings.canvasSize / settings.step;
+        this.image = new Image();
+        this.image.src = '../images/socialnerds.png';
         this.reset();
     }
 

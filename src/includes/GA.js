@@ -90,8 +90,10 @@ class GA {
         let parentWeightsIndexB = Math.floor(Math.random() * weightsArray.length);
 
         let mid = Math.floor(Math.random() * weightsArray[parentWeightsIndexA].inputWeights.length);
-        let childInputWeights = [...weightsArray[parentWeightsIndexA].inputWeights.slice(0, mid), ...weightsArray[parentWeightsIndexB].inputWeights.slice(mid, weightsArray[parentWeightsIndexB].inputWeights.length)];
-        let childOutputWeights = [...weightsArray[parentWeightsIndexA].outputWeights.slice(0, mid), ...weightsArray[parentWeightsIndexB].outputWeights.slice(mid, weightsArray[parentWeightsIndexB].outputWeights.length)];
+        let childInputWeights = [...weightsArray[parentWeightsIndexA].inputWeights.slice(0, mid),
+        ...weightsArray[parentWeightsIndexB].inputWeights.slice(mid, weightsArray[parentWeightsIndexB].inputWeights.length)];
+        let childOutputWeights = [...weightsArray[parentWeightsIndexA].outputWeights.slice(0, mid),
+        ...weightsArray[parentWeightsIndexB].outputWeights.slice(mid, weightsArray[parentWeightsIndexB].outputWeights.length)];
 
         let childSnakeGame = new SnakeGame();
 
@@ -116,11 +118,11 @@ class GA {
     mutate(snakeGame) {
         let newSnakeGame = new SnakeGame();
 
-        let mutatedInputWeights = snakeGame.model.inputWeights.dataSync().map(fn);
+        let mutatedInputWeights = snakeGame.model.inputWeights.dataSync().map(this.randomGaussian);
         let inputWeightsShape = snakeGame.model.inputWeights.shape;
         newSnakeGame.model.inputWeights = tf.tensor(mutatedInputWeights, inputWeightsShape);
 
-        let mutatedOutputWeights = snakeGame.model.outputWeights.dataSync().map(fn);
+        let mutatedOutputWeights = snakeGame.model.outputWeights.dataSync().map(this.randomGaussian);
         let outputWeightsShape = snakeGame.model.outputWeights.shape;
         newSnakeGame.model.outputWeights = tf.tensor(mutatedOutputWeights, outputWeightsShape);
 
@@ -151,7 +153,7 @@ class GA {
         }
 
         // Create crossovers from top games.
-        for (let i = 0; i < settings.popupation - settings.topSnakeChildren - settings.randomSnakeChildren; i++) {
+        for (let i = 0; i < settings.population - settings.topSnakeChildren - settings.randomSnakeChildren; i++) {
             let childSnakeGame = this.crossover(topSnakeGames);
             if (Math.random() < 0.5) {
                 let oldChildSnakeGame = childSnakeGame;
@@ -174,43 +176,22 @@ class GA {
      * @return {number}
      *   New weight.
      */
-    // randomGaussian(x) {
-    //     if (Math.random() < 0.05) {
-    //         let offset = () => {
-    //             let w, x1, x2;
-    //             do {
-    //                 x1 = Math.random() * 2 - 1;
-    //                 x2 = Math.random() * 2 - 1;
-    //                 w = x1 * x1 + x2 * x2;
-    //             } while (w >= 1);
-    //             w = Math.sqrt((-2 * Math.log(w)) / w);
-    //             return x1 * w * 0.5;
-    //         };
-    //         let newx = x + offset;
-    //         return newx;
-    //     }
-    //     return x;
-    // }
-}
-
-function fn(x) {
-    if (Math.random() < 0.05) {
-        let offset = randomGaussian() * 0.5;
-        let newx = x + offset;
-        return newx;
+    randomGaussian(weight) {
+        if (Math.random() < 0.05) {
+            let offset = function () {
+                let w, x1, x2;
+                do {
+                    x1 = Math.random() * 2 - 1;
+                    x2 = Math.random() * 2 - 1;
+                    w = x1 * x1 + x2 * x2;
+                } while (w >= 1);
+                w = Math.sqrt((-2 * Math.log(w)) / w);
+                return x1 * w * 0.5;
+            };
+            return weight + offset();
+        }
+        return weight;
     }
-    return x;
-}
-
-function randomGaussian() {
-    let w, x1, x2;
-    do {
-        x1 = Math.random() * 2 - 1;
-        x2 = Math.random() * 2 - 1;
-        w = x1 * x1 + x2 * x2;
-    } while (w >= 1);
-    w = Math.sqrt((-2 * Math.log(w)) / w);
-    return x1 * w;
 }
 
 export default GA;

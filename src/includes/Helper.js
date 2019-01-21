@@ -11,7 +11,7 @@ class Helper {
      */
     initializeGames() {
         let snakeGameArray = [];
-        for (let i = 0; i < settings.popupation; i++) {
+        for (let i = 0; i < settings.population; i++) {
             let currentSnakeGame = new SnakeGame();
             snakeGameArray.push(currentSnakeGame);
         }
@@ -70,22 +70,23 @@ class Helper {
         });
 
         info.innerHTML = `
-            Generation: ${generation},
-            Frame: ${currentFrame},
-            Top score: ${topScore},
-            Total score: ${this.getTotalScore(snakeGameArray)},
-            Previous generation score: ${previousGenetationScore},
-            Crashed: ${numCrashed}`;
+            <span class="label">Generation:</span> <span class="value">${generation}</span>,
+            <span class="label">Frame:</span> <span class="value">${currentFrame}</span>,
+            <span class="label">Top score:</span> <span class="value">${topScore}</span>,
+            <span class="label">Total score:</span> <span class="value">${this.getTotalScore(snakeGameArray)}</span>,
+            <span class="label">Previous generation score:</span> <span class="value">${previousGenetationScore}</span>,
+            <span class="label">Crashed:</span> <span class="value">${numCrashed}</span>, 
+            <span class="label">Showing</span> <span class="value">${settings.gamesShowing}</span> <span class="label">of</span> <span class="value">${settings.population}</span>`;
     }
 
     /**
      * Get total score of all snake games combined.
      * 
      * @param {Array.SnakeGame} snakeGameArray
-     *  Array of SnakeGame
+     *   Array of SnakeGame
      * 
      * @return {number}
-     *  Total score.
+     *   Total score.
      */
     getTotalScore(snakeGameArray) {
         let totalScore = 0;
@@ -97,28 +98,23 @@ class Helper {
     }
 
     /**
-     * Get random snake games for display.
+     * Set random snake games for display.
      * 
      * @param {Array.SnakeGame} snakeGameArray
-     *  Array of SnakeGame
+     *   Array of SnakeGame
      * 
      * @return {Array.SnakeGame}
-     *  Array of random selected snake games.
+     *   Array of random selected snake games.
      */
-    getRandomVisibleSnakeGames(snakeGameArray) {
-        let randomSnakeGameArray = [];
+    setRandomVisibleSnakeGames(snakeGameArray) {
+        let randomGamesNumber = 0;
         do {
             let index = Math.floor(Math.random() * snakeGameArray.length);
-            let gameExists = randomSnakeGameArray.filter(function (item) {
-                return item.id == snakeGameArray[index].id;
-            });
-            if (gameExists.length == 0) {
+            if (snakeGameArray[index].visible === false) {
                 snakeGameArray[index].setVisible();
-                randomSnakeGameArray.push(snakeGameArray[index]);
-            }
-        } while (randomSnakeGameArray.length < settings.gamesShowing);
-
-        return randomSnakeGameArray;
+                randomGamesNumber++;
+            } 
+        } while (randomGamesNumber < settings.gamesShowing);
     }
 }
 

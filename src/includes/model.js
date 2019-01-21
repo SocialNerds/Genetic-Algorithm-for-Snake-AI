@@ -17,10 +17,10 @@ class Model {
      * Predict the next move using current's neural network weights.
      * 
      * @param {Array} data
-     *  Current state as created by SnakeGame.getState().
+     *   Current state as created by SnakeGame.getState().
      * 
      * @return {number}
-     *  Next direction of the snake. 1 for up, 2 for right etc.
+     *   Next direction of the snake. 1 for up, 2 for right etc.
      */
     predict(data) {
         let output;
@@ -38,10 +38,10 @@ class Model {
      * Convert data to onehot array.
      * 
      * @param {Array} data
-     *  Current state as created by SnakeGame.getState().
+     *   Current state as created by SnakeGame.getState().
      * 
      * @return {import('@tensorflow/tfjs').Tensor2D}
-     *  Onehot array as tensor.
+     *   Onehot array as tensor.
      */
     convert(data) {
         let onehot = [];

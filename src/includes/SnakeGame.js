@@ -66,7 +66,18 @@ class SnakeGame {
      * Sets current game visible.
      */
     setVisible() {
+        this.visible = true;
         this.canvasContainer.classList.remove('hidden');
+    }
+
+    /**
+     * Get if this snake game is visible.
+     * 
+     * @return {boolean}
+     *   True if visible.
+     */
+    isVisible() {
+        return this.visible;
     }
 
     /**
@@ -81,8 +92,7 @@ class SnakeGame {
      * Draws current game food.
      */
     drawFood() {
-        this.context.fillStyle = 'red';
-        this.context.fillRect(this.food.x, this.food.y, settings.step, settings.step);
+        this.context.drawImage(this.food.image, this.food.x, this.food.y, settings.step, settings.step);
     }
 
     /**
@@ -90,12 +100,16 @@ class SnakeGame {
      */
     drawSnake() {
         this.context.fillStyle = 'blue';
-        this.context.fillRect(this.snake.x, this.snake.y, settings.step, settings.step);
+        this.context.beginPath();
+        this.context.arc(this.snake.x + settings.step / 2, this.snake.y + settings.step / 2, settings.step / 2, 0, 2 * Math.PI);
+        this.context.fill();
 
         // Draw queue.
         this.snake.queue.forEach(queueItem => {
             this.context.fillStyle = 'white';
-            this.context.fillRect(queueItem.x, queueItem.y, settings.step, settings.step);
+            this.context.beginPath();
+            this.context.arc(queueItem.x + settings.step / 2, queueItem.y + settings.step / 2, settings.step / 2, 0, 2 * Math.PI);
+            this.context.fill();
         });
     }
 

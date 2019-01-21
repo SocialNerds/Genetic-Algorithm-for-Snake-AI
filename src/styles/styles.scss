@@ -2,6 +2,7 @@ $generic_gutter: 10px;
 $text_color: #444;
 $container_background_color: #eee;
 $font_size: 18px;
+$red: #B00020;
 
 body {
     background-color: #444;
@@ -24,7 +25,14 @@ body {
     color: $text_color;
     padding: $generic_gutter 0;
     text-align: center;
-    font-size: $font_size; 
+    font-size: $font_size;
+    .label {
+        font-weight: 200;
+    }
+    .value {
+        font-weight: 700;
+        color: $red;
+    }
 }
 
 .main-content {

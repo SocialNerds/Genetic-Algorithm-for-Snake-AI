@@ -7,30 +7,20 @@ import './styles/styles.scss'
 // Set WebGL backend.
 tf.setBackend('cpu', false);
 
-// Key being pressed.
-let keyState = {};
-
 // Initialize.
 let helper = new Helper();
 let snakeGameArray = helper.initializeGames();
-let snakeGameVisibleArray = helper.getRandomVisibleSnakeGames(snakeGameArray);
+helper.setRandomVisibleSnakeGames(snakeGameArray);
 
 // Genetic algorith.
 let ga = new GA();
 
-let currentFrame = 0;
+let currentFrame = 1;
 let generation = 1;
 let previousGenetationScore = 0;
 
 let gameLoop;
-window.onload = () => {
-    window.addEventListener(
-        'keydown',
-        e => keyState[e.keyCode || e.which] = true
-        , true
-    );
-    startGame();
-};
+window.onload = () => { startGame() };
 
 /**
  * A function to start or restart gameloop.
@@ -50,18 +40,12 @@ function stopGame() {
  * Gameloop function.
  */
 function game() {
-    if (currentFrame < settings.gameFrames) {
+    if (currentFrame <= settings.gameFrames) {
         snakeGameArray.forEach(currentSnakeGame => {
             if (!currentSnakeGame.snake.getCrashed()) {
-                if (settings.ai) {
-                    let direction = currentSnakeGame.model.predict(currentSnakeGame.getState());
-                    currentSnakeGame.snake.setDirection(direction);
-                } else {
-                    let direction = getDirection();
-                    if (direction != 0) {
-                        currentSnakeGame.snake.setDirection(direction);
-                    }
-                }
+                currentSnakeGame.snake.setDirection(
+                    currentSnakeGame.model.predict(currentSnakeGame.getState())
+                );
 
                 if (currentSnakeGame.snake.getCapture(currentSnakeGame.food.x, currentSnakeGame.food.y)) {
                     currentSnakeGame.snake.expand(currentSnakeGame.food.x, currentSnakeGame.food.y);
@@ -72,47 +56,30 @@ function game() {
                 }
                 currentSnakeGame.snake.move();
 
-                if (!currentSnakeGame.snake.getCrashed() && currentSnakeGame.snake.getTailCrash()) {
+                if (currentSnakeGame.snake.getTailCrash()) {
                     currentSnakeGame.snake.setCrashed();
                 }
+
+                if (currentSnakeGame.isVisible()) {
+                    currentSnakeGame.drawCanvas();
+                    currentSnakeGame.drawFood();
+                    currentSnakeGame.drawSnake();
+                }
+
                 currentSnakeGame.updateInfo();
             }
         });
 
-        snakeGameVisibleArray.forEach(currentSnakeGame => {
-            currentSnakeGame.drawCanvas();
-            currentSnakeGame.drawFood();
-            currentSnakeGame.drawSnake();
-        });
-        
         helper.updateMainInfo(generation, currentFrame, snakeGameArray, previousGenetationScore);
         currentFrame++;
     } else {
-        currentFrame = 0;
         stopGame();
         // Keep total score for the next generation.
         previousGenetationScore = helper.getTotalScore(snakeGameArray);
         snakeGameArray = ga.createNewGeneration(snakeGameArray);
-        snakeGameVisibleArray = helper.getRandomVisibleSnakeGames(snakeGameArray);
+        helper.setRandomVisibleSnakeGames(snakeGameArray);
         startGame();
+        currentFrame = 1;
         generation++;
     }
-}
-
-/**
- * Get direction from keyboard in case we are not using AI.
- */
-function getDirection() {
-    let direction = 0;
-    if (keyState[38]) {
-        direction = 1;
-    } else if (keyState[39]) {
-        direction = 2;
-    } else if (keyState[40]) {
-        direction = 3;
-    } else if (keyState[37]) {
-        direction = 4;
-    }
-    keyState = {};
-    return direction;
 }
