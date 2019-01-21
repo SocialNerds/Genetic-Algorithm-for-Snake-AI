@@ -1,7 +1,10 @@
-import { settings } from "./settings";
+import { settings } from './settings';
 
 class Snake {
 
+    /**
+     * Creates a new snake for current game.
+     */
     constructor() {
         this.x = 0;
         this.y = 0;
@@ -12,6 +15,9 @@ class Snake {
         this.score = 0;
     }
 
+    /**
+     * Moves snake according to selected direction.
+     */
     move() {
         if (this.crashed) {
             return;
@@ -33,7 +39,7 @@ class Snake {
             }
         }
         else if (this.direction == 3) {
-            if (this.y >= settings.canvasSize  - settings.step) {
+            if (this.y >= settings.canvasSize - settings.step) {
                 this.y = 0;
             }
             else {
@@ -50,6 +56,17 @@ class Snake {
         }
     }
 
+    /**
+     * Get if snake has captured food.
+     * 
+     * @param {number} fx
+     *   Food x value.
+     * @param {number} fy
+     *   Food y value.
+     * 
+     * @return {boolean}
+     *   True if food hs been captured. 
+     */
     getCapture(fx, fy) {
         if (this.detectCollision(
             this.x,
@@ -61,6 +78,9 @@ class Snake {
         }
     }
 
+    /**
+     * Expand snake and increase score.
+     */
     expand() {
         this.queue.unshift({
             x: this.x,
@@ -69,6 +89,9 @@ class Snake {
         this.score++;
     }
 
+    /**
+     * Move queue according to previous snake head location.
+     */
     moveQueue() {
         if (this.crashed) {
             return;
@@ -82,6 +105,12 @@ class Snake {
         }
     }
 
+    /**
+     * Get if snake has crashed to its tail.
+     * 
+     * @return {boolean}
+     *   True if it has crashed.
+     */
     getTailCrash() {
         for (let i = 0; i < this.queue.length; i++) {
             if (this.detectCollision(
@@ -95,19 +124,37 @@ class Snake {
         }
     }
 
+    /**
+     * Set snake as crashed.
+     */
     setCrashed() {
         this.crashed = true;
         this.direction = 0;
     }
 
+    /**
+     * Get if snake is crashed.
+     */
     getCrashed() {
         return this.crashed;
     }
 
+    /**
+     * Get current snake score.
+     * 
+     * @return {number}
+     *   Score.
+     */
     getScore() {
         return this.score;
     }
 
+    /**
+     * Set snake direction.
+     * 
+     * @param {number} direction
+     *   1 for up, 2 for right etc.
+     */
     setDirection(direction) {
         // Don't allow 180 direction change.
         let $dc1 = this.direction == 1 && direction == 3;
@@ -120,6 +167,21 @@ class Snake {
         this.direction = direction;
     }
 
+    /**
+     * Detect collision of objects.
+     * 
+     * @param {number} x1
+     *   X of first object.
+     * @param {number} y1 
+     *   Y of first object.
+     * @param {number} x2 
+     *   X of second object.
+     * @param {number} y2
+     *   Y of second object.
+     * 
+     * @return {boolean}
+     *   True if there is a collision.
+     */
     detectCollision(x1, y1, x2, y2) {
         return x1 == x2 && y1 == y2;
     }

@@ -3,6 +3,12 @@ import { settings } from './settings';
 
 class Helper {
 
+    /**
+     * Initialize games.
+     * 
+     * @return {Array.SnakeGame}
+     *   New snake games.
+     */
     initializeGames() {
         let snakeGameArray = [];
         for (let i = 0; i < settings.popupation; i++) {
@@ -13,17 +19,41 @@ class Helper {
         return snakeGameArray;
     }
 
-    destroyCurrentGames(snakeGameArray) {
+    /**
+     * Destroy multiple games.
+     * 
+     * @param {Array.SnakeGame} snakeGameArray
+     *   Snake games.
+     */
+    destroyGames(snakeGameArray) {
         snakeGameArray.forEach(currentSnakeGame => {
             this.destroyGame(currentSnakeGame);
         });
     }
 
-    destroyGame(SnakeGame) {
-        let container = document.getElementById(`container_${SnakeGame.id}`);
+    /**
+     * Destroy a snake game.
+     * 
+     * @param {SnakeGame} snakeGame 
+     *   Snake game.
+     */
+    destroyGame(snakeGame) {
+        let container = document.getElementById(`container_${snakeGame.id}`);
         container.parentNode.removeChild(container);
     }
 
+    /**
+     * Updates and displays status information.
+     * 
+     * @param {number} generation
+     *   Current generation.
+     * @param {number} currentFrame
+     *   Current frame. 
+     * @param {Array.SnakeGame} snakeGameArray 
+     *   Array of snake games.
+     * @param {number} previousGenetationScore
+     *   Previous generation score.
+     */
     updateMainInfo(generation, currentFrame, snakeGameArray, previousGenetationScore) {
         let info = document.getElementById('main_info');
 
@@ -51,7 +81,7 @@ class Helper {
     /**
      * Get total score of all snake games combined.
      * 
-     * @param {Array} snakeGameArray
+     * @param {Array.SnakeGame} snakeGameArray
      *  Array of SnakeGame
      * 
      * @return {number}
@@ -69,10 +99,10 @@ class Helper {
     /**
      * Get random snake games for display.
      * 
-     * @param {Array} snakeGameArray
+     * @param {Array.SnakeGame} snakeGameArray
      *  Array of SnakeGame
      * 
-     * @return {Array}
+     * @return {Array.SnakeGame}
      *  Array of random selected snake games.
      */
     getRandomVisibleSnakeGames(snakeGameArray) {

@@ -1,10 +1,10 @@
-import { settings } from './includes/settings';
-import Helper from './includes/Helper';
-import './styles/styles.scss'
-import GA from './includes/GA';
 import * as tf from '@tensorflow/tfjs';
+import GA from './includes/GA';
+import Helper from './includes/Helper';
+import { settings } from './includes/settings';
+import './styles/styles.scss'
 
-// Set WwbGL backend.
+// Set WebGL backend.
 tf.setBackend('cpu', false);
 
 // Key being pressed.
@@ -20,7 +20,6 @@ let ga = new GA();
 
 let currentFrame = 0;
 let generation = 1;
-
 let previousGenetationScore = 0;
 
 let gameLoop;
@@ -47,13 +46,13 @@ function stopGame() {
     clearInterval(gameLoop);
 }
 
+/**
+ * Gameloop function.
+ */
 function game() {
     if (currentFrame < settings.gameFrames) {
         snakeGameArray.forEach(currentSnakeGame => {
             if (!currentSnakeGame.snake.getCrashed()) {
-                // currentSnakeGame.drawCanvas();
-                // currentSnakeGame.drawFood();
-
                 if (settings.ai) {
                     let direction = currentSnakeGame.model.predict(currentSnakeGame.getState());
                     currentSnakeGame.snake.setDirection(direction);
@@ -76,18 +75,7 @@ function game() {
                 if (!currentSnakeGame.snake.getCrashed() && currentSnakeGame.snake.getTailCrash()) {
                     currentSnakeGame.snake.setCrashed();
                 }
-                // currentSnakeGame.drawSnake();
                 currentSnakeGame.updateInfo();
-
-                // if (currentSnakeGame.snake.getCrashed()) {
-                //     currentSnakeGame.drawCanvas();
-                //     currentSnakeGame.drawFood();
-                //     currentSnakeGame.drawSnake();
-                //     console.log(currentSnakeGame);
-                //     console.log(currentSnakeGame.getState());
-                //     console.log(currentSnakeGame.model.convert(currentSnakeGame.getState()).dataSync());
-                //     stopGame();
-                // }
             }
         });
 
@@ -111,6 +99,9 @@ function game() {
     }
 }
 
+/**
+ * Get direction from keyboard in case we are not using AI.
+ */
 function getDirection() {
     let direction = 0;
     if (keyState[38]) {

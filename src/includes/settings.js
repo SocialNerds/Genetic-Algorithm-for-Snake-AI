@@ -18,9 +18,9 @@ export const settings = {
     // Games to show.
     gamesShowing: 8,
     // NN settings.
-    inputWeightsNum: 8,
-    hiddenLayerNodes: 8,
-    outputWeightsNum: 8,
+    inputWeightsNum: 16,
+    hiddenLayerNodes: 16,
+    outputWeightsNum: 16,
     // States reference.
     state: {
         snake: 1,

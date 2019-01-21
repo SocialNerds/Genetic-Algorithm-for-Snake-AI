@@ -5,10 +5,22 @@ import * as tf from '@tensorflow/tfjs';
 
 class GA {
 
+    /**
+     * Created the evolutianary helper class.
+     */
     constructor() {
         this.helper = new Helper();
     }
 
+    /**
+     * Get the top parents of the current generation.
+     * 
+     * @param {Array.SnakeGame} snakeGameArray
+     *   Array of snake games.
+     * 
+     * @return {Array.SnakeGame}
+     *   Top parents.
+     */
     getTopParents(snakeGameArray) {
         // The clean values of snake games.
         let snakeGameArrayValues = [];
@@ -31,16 +43,34 @@ class GA {
                 }
             }
         });
-        
+
         return topSnakeGames;
     }
 
+    /**
+     * Sort Snake games based on score.
+     * 
+     * @param {Array} snakeGameArrayValues
+     *   Array of values id, score, crashed.
+     * 
+     * @return {Array}
+     *   Sorted array.
+     */
     sortGames(snakeGameArrayValues) {
         return snakeGameArrayValues.sort(function (a, b) {
             return b.score - a.score;
         })
     }
 
+    /**
+     * Gets top parents and creates a crossover of their neural networks.
+     * 
+     * @param {Array.SnakeGame} topSnakeGames
+     *   Array of top snake games.
+     * 
+     * @return {SnakeGame}
+     *   A new snake game.
+     */
     crossover(topSnakeGames) {
         // Create a gene pool.
         let weightsArray = [];
@@ -74,6 +104,15 @@ class GA {
         return childSnakeGame;
     }
 
+    /**
+     * Mutate the weights of one snake game. The game is recreated.
+     * 
+     * @param {SnakeGame} snakeGame
+     *   Snake game to mutate.
+     * 
+     * @return {SnakeGame}
+     *   Mutated snake game.
+     */
     mutate(snakeGame) {
         let newSnakeGame = new SnakeGame();
 
@@ -88,6 +127,15 @@ class GA {
         return newSnakeGame;
     }
 
+    /**
+     * Creates a new generation of skake games.
+     * 
+     * @param {Array.SnakeGame} snakeGameArray
+     *   Array of top snake games.
+     * 
+     * @return {Array.SnakeGame}
+     *   New generation.
+     */
     createNewGeneration(snakeGameArray) {
         let topSnakeGames = this.getTopParents(snakeGameArray);
 
@@ -101,7 +149,7 @@ class GA {
         for (let i = 0; i < settings.randomSnakeChildren; i++) {
             newGenerationSnakeGameArray.push(new SnakeGame());
         }
-        
+
         // Create crossovers from top games.
         for (let i = 0; i < settings.popupation - settings.topSnakeChildren - settings.randomSnakeChildren; i++) {
             let childSnakeGame = this.crossover(topSnakeGames);
@@ -113,10 +161,19 @@ class GA {
             newGenerationSnakeGameArray.push(childSnakeGame);
         }
 
-        this.helper.destroyCurrentGames(snakeGameArray);
+        this.helper.destroyGames(snakeGameArray);
         return newGenerationSnakeGameArray;
     }
 
+    /**
+     * Mutate 5% of the weights.
+     * 
+     * @param {number} x
+     *   Weight item.
+     * 
+     * @return {number}
+     *   New weight.
+     */
     // randomGaussian(x) {
     //     if (Math.random() < 0.05) {
     //         let offset = () => {

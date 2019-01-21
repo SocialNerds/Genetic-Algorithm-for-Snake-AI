@@ -7,7 +7,7 @@ class Food {
      * Creates the food.
      * 
      * @param {Snake} snake
-     *  Snake in the same canvas.
+     *   Snake in the same canvas.
      */
     constructor(snake) {
         this.snake = snake;

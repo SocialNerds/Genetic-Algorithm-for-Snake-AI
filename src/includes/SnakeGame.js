@@ -1,10 +1,13 @@
-import Food from "./Food";
-import Snake from "./Snake";
-import Model from "./Model";
-import { settings } from "./settings";
+import Food from './Food';
+import Snake from './Snake';
+import Model from './Model';
+import { settings } from './settings';
 
 class SnakeGame {
 
+    /**
+     * Creates a snake game with dom elements, canvas and snake.
+     */
     constructor() {
         this.id = this.makeId();
         this.context = null;
@@ -17,10 +20,22 @@ class SnakeGame {
         this.model = new Model();
     }
 
+    /**
+     * Get current canvas.
+     * 
+     * @return {HTMLCanvasElement}
+     *   Canvas object.
+     */
     getCanvas() {
         return document.getElementById(this.id)
     }
 
+    /**
+     * Creates snake game dom elements.
+     * 
+     * @return {HTMLDivElement}
+     *   Canvas container.
+     */
     createElements() {
         let canvasContainer = document.createElement('div');
         canvasContainer.id = `container_${this.id}`;
@@ -48,25 +63,31 @@ class SnakeGame {
     }
 
     /**
-     * Set current skake game visible or not.
-     * 
-     * @param bool visibility 
-     *  True if visible.
+     * Sets current game visible.
      */
     setVisible() {
         this.canvasContainer.classList.remove('hidden');
     }
 
+    /**
+     * Draws current game canvas.
+     */
     drawCanvas() {
         this.context.fillStyle = 'rgba(0, 0, 0, 1)';
         this.context.fillRect(0, 0, settings.canvasSize, settings.canvasSize);
     }
 
+    /**
+     * Draws current game food.
+     */
     drawFood() {
         this.context.fillStyle = 'red';
         this.context.fillRect(this.food.x, this.food.y, settings.step, settings.step);
     }
 
+    /**
+     * Draws current game snake.
+     */
     drawSnake() {
         this.context.fillStyle = 'blue';
         this.context.fillRect(this.snake.x, this.snake.y, settings.step, settings.step);
@@ -78,6 +99,9 @@ class SnakeGame {
         });
     }
 
+    /**
+     * Updates current game info.
+     */
     updateInfo() {
         let info = document.getElementById(`info_${this.id}`);
         info.innerHTML = `Score: ${this.snake.getScore()}<br>Crashed: ${this.snake.getCrashed()}`;
@@ -85,6 +109,12 @@ class SnakeGame {
 
     /**
      * Returns an array with the state of the current game.
+     * 
+     * @return {array}
+     *   Array that contains,
+     *     - x, y array of snake
+     *     - general food direction
+     *     - Arrays of objects arround the snake
      */
     getState() {
         let state = [];
@@ -188,6 +218,15 @@ class SnakeGame {
         return state;
     }
 
+    /**
+     * Get if there is something on given coordinates.
+     * 
+     * @param {number} x
+     * @param {number} y 
+     * 
+     * @return {number}
+     *   Type of object.
+     */
     getStateOfGridBox(x, y) {
         if (this.snake.x == x && this.snake.y == y) {
             return settings.state.snake;
@@ -206,6 +245,12 @@ class SnakeGame {
         return null;
     }
 
+    /**
+     * Creates a random id for this game.
+     * 
+     * @return {string}
+     *   Random string id.
+     */
     makeId() {
         var text = '';
         var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
