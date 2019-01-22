@@ -92,6 +92,7 @@ class GA {
         let mid = Math.floor(Math.random() * weightsArray[parentWeightsIndexA].inputWeights.length);
         let childInputWeights = [...weightsArray[parentWeightsIndexA].inputWeights.slice(0, mid),
         ...weightsArray[parentWeightsIndexB].inputWeights.slice(mid, weightsArray[parentWeightsIndexB].inputWeights.length)];
+        mid = Math.floor(mid * weightsArray[parentWeightsIndexA].outputWeights.length / weightsArray[parentWeightsIndexA].inputWeights.length);
         let childOutputWeights = [...weightsArray[parentWeightsIndexA].outputWeights.slice(0, mid),
         ...weightsArray[parentWeightsIndexB].outputWeights.slice(mid, weightsArray[parentWeightsIndexB].outputWeights.length)];
 
@@ -168,7 +169,7 @@ class GA {
     }
 
     /**
-     * Mutate 5% of the weights.
+     * Mutate weights.
      * 
      * @param {number} x
      *   Weight item.

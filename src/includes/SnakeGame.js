@@ -12,12 +12,12 @@ class SnakeGame {
         this.id = this.makeId();
         this.context = null;
         this.visible = false;
-
-        let canvasContainer = document.getElementById(this.id)
-        this.canvasContainer = canvasContainer === null ? this.createElements() : canvasContainer;
         this.snake = new Snake();
         this.food = new Food(this.snake);
         this.model = new Model();
+
+        let canvasContainer = document.getElementById(this.id)
+        this.canvasContainer = canvasContainer === null ? this.createElements() : canvasContainer;
     }
 
     /**
@@ -84,7 +84,7 @@ class SnakeGame {
      * Draws current game canvas.
      */
     drawCanvas() {
-        this.context.fillStyle = 'rgba(0, 0, 0, 1)';
+        this.context.fillStyle = this.snake.getCrashed() ? '#B00020' : 'rgba(0, 0, 0, 1)';
         this.context.fillRect(0, 0, settings.canvasSize, settings.canvasSize);
     }
 
@@ -126,6 +126,7 @@ class SnakeGame {
      * 
      * @return {array}
      *   Array that contains,
+     *     - direction of the snake
      *     - x, y array of snake
      *     - general food direction
      *     - Arrays of objects arround the snake
@@ -135,6 +136,9 @@ class SnakeGame {
 
         // Helper variable to get state of snake's adjacent grid boxes.
         let currentState = null;
+
+        // Get snake direction.
+        state.push([this.snake.direction]);
 
         // Get snake coordinates.
         state.push([this.snake.x, this.snake.y]);

@@ -2,9 +2,9 @@ export const settings = {
     // Population of snakes. Minimum topSnakeChildren + randomSnakeChildren.
     population: 2000,
     // Number of children to evolve from the top snake.
-    topSnakeChildren: 100,
+    topSnakeChildren: 10,
     // Number of children with new random gene.
-    randomSnakeChildren: 100,
+    randomSnakeChildren: 500,
     // Number of top parents for the next generation.
     topParentsGenePool: 20,
     // Grid size.
@@ -12,7 +12,7 @@ export const settings = {
     // Each game canvas size. It has to be multiple of step.
     canvasSize: 300,
     // Lifecycle of each run.
-    gameFrames: 250,
+    gameFrames: 200,
     // Interval of game loop.
     interval: 1,
     // Games to show.

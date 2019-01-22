@@ -10,7 +10,7 @@ tf.setBackend('cpu', false);
 // Initialize.
 let helper = new Helper();
 let snakeGameArray = helper.initializeGames();
-helper.setRandomVisibleSnakeGames(snakeGameArray);
+helper.setVisibleSnakeGames(snakeGameArray);
 
 // Genetic algorith.
 let ga = new GA();
@@ -67,6 +67,16 @@ function game() {
                 }
 
                 currentSnakeGame.updateInfo();
+                // if (currentSnakeGame.snake.queue.length == 8) {
+                //     currentSnakeGame.drawCanvas();
+                //     currentSnakeGame.drawFood();
+                //     currentSnakeGame.drawSnake();
+                //     let state = currentSnakeGame.getState();
+                //     console.log(currentSnakeGame.id);
+                //     console.log(state);
+                //     console.log(currentSnakeGame.model.convert(state).dataSync());
+                //     stopGame();
+                // }
             }
         });
 
@@ -77,7 +87,7 @@ function game() {
         // Keep total score for the next generation.
         previousGenetationScore = helper.getTotalScore(snakeGameArray);
         snakeGameArray = ga.createNewGeneration(snakeGameArray);
-        helper.setRandomVisibleSnakeGames(snakeGameArray);
+        helper.setVisibleSnakeGames(snakeGameArray);
         startGame();
         currentFrame = 1;
         generation++;

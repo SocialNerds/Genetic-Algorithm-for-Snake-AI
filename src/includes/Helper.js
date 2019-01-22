@@ -98,23 +98,28 @@ class Helper {
     }
 
     /**
-     * Set random snake games for display.
+     * Set top snake games as visible and some random.
      * 
      * @param {Array.SnakeGame} snakeGameArray
      *   Array of SnakeGame
      * 
      * @return {Array.SnakeGame}
-     *   Array of random selected snake games.
+     *   Array of selected snake games.
      */
-    setRandomVisibleSnakeGames(snakeGameArray) {
+    setVisibleSnakeGames(snakeGameArray) {
+        let topNumber = Math.floor(settings.gamesShowing / 2);
         let randomGamesNumber = 0;
+        for (let i = 0; i < topNumber; i++) {
+            snakeGameArray[i].setVisible();
+        }
+        // And some random.
         do {
-            let index = Math.floor(Math.random() * snakeGameArray.length);
-            if (snakeGameArray[index].visible === false) {
-                snakeGameArray[index].setVisible();
+            let i = Math.floor(Math.random() * (snakeGameArray.length - topNumber) + topNumber);
+            if (snakeGameArray[i].visible === false) {
+                snakeGameArray[i].setVisible();
                 randomGamesNumber++;
             } 
-        } while (randomGamesNumber < settings.gamesShowing);
+        } while (randomGamesNumber < settings.gamesShowing - topNumber);
     }
 }
 

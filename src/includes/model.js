@@ -8,7 +8,7 @@ class Model {
      */
     constructor() {
         let outputLayerNodes = 4;
-        this.inputLayerNodes = 16;
+        this.inputLayerNodes = 20;
         this.inputWeights = tf.randomNormal([this.inputLayerNodes, settings.hiddenLayerNodes]);
         this.outputWeights = tf.randomNormal([settings.hiddenLayerNodes, outputLayerNodes]);
     }
@@ -45,6 +45,14 @@ class Model {
      */
     convert(data) {
         let onehot = [];
+        let direction = data.shift()[0]
+        for (let i = 1; i <= 4; i++) {
+            if (i == direction) {
+                onehot.push(1);
+                continue;
+            }
+            onehot.push(0);
+        }
         let snake = data.shift();
         onehot.push(snake[0] / settings.canvasSize, snake[1] / settings.canvasSize);
         let foodDirection = data.shift();
