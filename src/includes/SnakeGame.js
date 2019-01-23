@@ -15,9 +15,6 @@ class SnakeGame {
         this.snake = new Snake();
         this.food = new Food(this.snake);
         this.model = new Model();
-
-        let canvasContainer = document.getElementById(this.id)
-        this.canvasContainer = canvasContainer === null ? this.createElements() : canvasContainer;
     }
 
     /**
@@ -39,7 +36,7 @@ class SnakeGame {
     createElements() {
         let canvasContainer = document.createElement('div');
         canvasContainer.id = `container_${this.id}`;
-        canvasContainer.className = 'canvas-container hidden';
+        canvasContainer.className = 'canvas-container';
         document.getElementById('main_content').appendChild(canvasContainer);
 
         let canvas = document.createElement('canvas');
@@ -67,7 +64,7 @@ class SnakeGame {
      */
     setVisible() {
         this.visible = true;
-        this.canvasContainer.classList.remove('hidden');
+        this.canvasContainer = this.createElements();
     }
 
     /**
@@ -105,20 +102,23 @@ class SnakeGame {
         this.context.fill();
 
         // Draw queue.
-        this.snake.queue.forEach(queueItem => {
-            this.context.fillStyle = 'white';
+        let queueLength = this.snake.queue.length;
+        for (let i = 0; i < queueLength; i++) {
+            this.context.fillStyle = `rgba(255, 255, 255, ${1 / (i / queueLength + 1)})`;
             this.context.beginPath();
-            this.context.arc(queueItem.x + settings.step / 2, queueItem.y + settings.step / 2, settings.step / 2, 0, 2 * Math.PI);
+            this.context.arc(this.snake.queue[i].x + settings.step / 2, this.snake.queue[i].y + settings.step / 2, settings.step / 2, 0, 2 * Math.PI);
             this.context.fill();
-        });
+        }
     }
 
     /**
      * Updates current game info.
      */
     updateInfo() {
-        let info = document.getElementById(`info_${this.id}`);
-        info.innerHTML = `Score: ${this.snake.getScore()}<br>Crashed: ${this.snake.getCrashed()}`;
+        if (this.isVisible()) {
+            let info = document.getElementById(`info_${this.id}`);
+            info.innerHTML = `Score: ${this.snake.getScore()}<br>Crashed: ${this.snake.getCrashed()}`;
+        }
     }
 
     /**
@@ -259,6 +259,14 @@ class SnakeGame {
         }
 
         return null;
+    }
+
+    /**
+     * Keep model and reset everything else.
+     */
+    reset() {
+        this.snake.reset();
+        this.food.reset();
     }
 
     /**

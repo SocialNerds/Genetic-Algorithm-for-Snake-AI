@@ -6,13 +6,26 @@ class Snake {
      * Creates a new snake for current game.
      */
     constructor() {
+        this.reset();
+    }
+
+    /**
+     * Reset snake.
+     */
+    reset() {
         this.x = 0;
         this.y = 0;
         this.queue = [];
+        this.initializeDirection();
+        this.crashed = false;
+    }
+    
+    /**
+     * Initialize a random direction.
+     */
+    initializeDirection() {
         // 1, 2, 3, 4.
         this.direction = Math.floor(Math.random() * 4) + 1;
-        this.crashed = false;
-        this.score = 0;
     }
 
     /**
@@ -86,7 +99,6 @@ class Snake {
             x: this.x,
             y: this.y
         });
-        this.score++;
     }
 
     /**
@@ -126,10 +138,18 @@ class Snake {
 
     /**
      * Set snake as crashed.
+     * 
+     * @param {boolean} crashed
+     *   True if is crashed.
      */
-    setCrashed() {
-        this.crashed = true;
-        this.direction = 0;
+    setCrashed(crashed) {
+        this.crashed = crashed;
+        if (crashed) {
+            this.direction = 0;
+        }
+        else {
+            this.initializeDirection();
+        }
     }
 
     /**
@@ -146,25 +166,56 @@ class Snake {
      *   Score.
      */
     getScore() {
-        return this.score;
+        return this.queue.length;
     }
 
     /**
      * Set snake direction.
      * 
-     * @param {number} direction
-     *   1 for up, 2 for right etc.
+     * @param {Array} prediction
+     *   Array of direction with weights.
      */
-    setDirection(direction) {
-        // Don't allow 180 direction change.
-        let $dc1 = this.direction == 1 && direction == 3;
-        let $dc2 = this.direction == 3 && direction == 1;
-        let $dc3 = this.direction == 2 && direction == 4;
-        let $dc4 = this.direction == 4 && direction == 2;
-        if ($dc1 || $dc2 || $dc3 || $dc4) {
-            return;
+    setDirection(prediction) {
+        let directionMapped = this.sortDirections(prediction);
+        let directionFound = false;
+        let directionIndex = 0;
+        do {
+            let directionItem = directionMapped[directionIndex];
+            let $dc1 = this.direction == 1 && directionItem.direction == 3;
+            let $dc2 = this.direction == 3 && directionItem.direction == 1;
+            let $dc3 = this.direction == 2 && directionItem.direction == 4;
+            let $dc4 = this.direction == 4 && directionItem.direction == 2;
+            if ($dc1 || $dc2 || $dc3 || $dc4) {
+                directionIndex++;
+                continue;
+            }
+            this.direction = directionItem.direction;
+            directionFound = true;
+
+        } while (!directionFound);
+    }
+
+    /**
+     * Sort directions by weight.
+     * 
+     * @param {Array} prediction
+     *   Array of direction with weights.
+     * 
+     * @return {Array}
+     *   Sorted array of direction and weight.
+     */
+    sortDirections(prediction) {
+        let directionMapped = [];
+        for (let i = 1; i <= prediction.length; i++) {
+            directionMapped.push({
+                direction: i,
+                weight: prediction[i - 1]
+            })
         }
-        this.direction = direction;
+
+        return directionMapped.sort(function (a, b) {
+            return b.weight - a.weight;
+        })
     }
 
     /**

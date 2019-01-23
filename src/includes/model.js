@@ -28,7 +28,7 @@ class Model {
             let inputLayer = this.convert(data);
             let hiddenLayer = inputLayer.matMul(this.inputWeights).sigmoid();
             let outputLayer = hiddenLayer.matMul(this.outputWeights).sigmoid();
-            output = tf.argMax(outputLayer, 1).dataSync()[0] + 1;
+            output = outputLayer.dataSync();
         });
 
         return output;

@@ -22,44 +22,23 @@ class GA {
      *   Top parents.
      */
     getTopParents(snakeGameArray) {
-        // The clean values of snake games.
-        let snakeGameArrayValues = [];
-        snakeGameArray.forEach(currentSnakeGame => {
-            snakeGameArrayValues.push({
-                id: currentSnakeGame.id,
-                score: currentSnakeGame.snake.getScore(),
-                crashed: currentSnakeGame.snake.getCrashed()
-            })
-        });
-
-        snakeGameArrayValues = this.sortGames(snakeGameArrayValues);
-
-        // The top games.
-        let topSnakeGames = []
-        snakeGameArray.forEach(currentSnakeGame => {
-            for (let i = 0; i < settings.topParentsGenePool; i++) {
-                if (snakeGameArrayValues[i].id == currentSnakeGame.id) {
-                    topSnakeGames.push(currentSnakeGame);
-                }
-            }
-        });
-
-        return topSnakeGames;
+        snakeGameArray = this.sortGames(snakeGameArray);
+        return snakeGameArray.slice(0, settings.topParentsGenePool);
     }
 
     /**
      * Sort Snake games based on score.
      * 
-     * @param {Array} snakeGameArrayValues
+     * @param {Array} snakeGameArray
      *   Array of values id, score, crashed.
      * 
      * @return {Array}
      *   Sorted array.
      */
-    sortGames(snakeGameArrayValues) {
-        return snakeGameArrayValues.sort(function (a, b) {
-            return b.score - a.score;
-        })
+    sortGames(snakeGameArray) {
+        return snakeGameArray.sort(function (a, b) {
+            return b.snake.getScore() - a.snake.getScore();
+        });
     }
 
     /**
@@ -145,17 +124,21 @@ class GA {
         let newGenerationSnakeGameArray = [];
         // Create games from current top game.
         for (let i = 0; i < settings.topSnakeChildren; i++) {
+            // Include for reference the top game from last generation as is.
+            if (i == 0) {
+                topSnakeGames[0].reset();
+                newGenerationSnakeGameArray.push(topSnakeGames[0]);
+                continue;
+            }
             newGenerationSnakeGameArray.push(this.mutate(topSnakeGames[0]));
         }
 
         // Create crossovers from top games.
         for (let i = 0; i < settings.population - settings.topSnakeChildren - settings.randomSnakeChildren; i++) {
             let childSnakeGame = this.crossover(topSnakeGames);
-            if (Math.random() < 0.5) {
-                let oldChildSnakeGame = childSnakeGame;
-                childSnakeGame = this.mutate(childSnakeGame);
-                this.helper.destroyGame(oldChildSnakeGame);
-            }
+            let oldChildSnakeGame = childSnakeGame;
+            childSnakeGame = this.mutate(childSnakeGame);
+            this.helper.destroyGame(oldChildSnakeGame);
             newGenerationSnakeGameArray.push(childSnakeGame);
         }
 

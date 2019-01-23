@@ -12,8 +12,7 @@ class Helper {
     initializeGames() {
         let snakeGameArray = [];
         for (let i = 0; i < settings.population; i++) {
-            let currentSnakeGame = new SnakeGame();
-            snakeGameArray.push(currentSnakeGame);
+            snakeGameArray.push(new SnakeGame());
         }
 
         return snakeGameArray;
@@ -38,8 +37,10 @@ class Helper {
      *   Snake game.
      */
     destroyGame(snakeGame) {
-        let container = document.getElementById(`container_${snakeGame.id}`);
-        container.parentNode.removeChild(container);
+        if (snakeGame.isVisible()) {
+            let container = document.getElementById(`container_${snakeGame.id}`);
+            container.parentNode.removeChild(container);
+        }
     }
 
     /**

@@ -57,7 +57,7 @@ function game() {
                 currentSnakeGame.snake.move();
 
                 if (currentSnakeGame.snake.getTailCrash()) {
-                    currentSnakeGame.snake.setCrashed();
+                    currentSnakeGame.snake.setCrashed(true);
                 }
 
                 if (currentSnakeGame.isVisible()) {
