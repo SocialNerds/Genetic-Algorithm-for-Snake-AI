@@ -8,7 +8,7 @@ class Model {
      */
     constructor() {
         let outputLayerNodes = 4;
-        this.inputLayerNodes = 20;
+        this.inputLayerNodes = 14;
         this.inputWeights = tf.randomNormal([this.inputLayerNodes, settings.hiddenLayerNodes]);
         this.outputWeights = tf.randomNormal([settings.hiddenLayerNodes, outputLayerNodes]);
     }
@@ -35,38 +35,32 @@ class Model {
     }
 
     /**
-     * Convert data to onehot array.
+     * Convert data to tensor.
      * 
      * @param {Array} data
      *   Current state as created by SnakeGame.getState().
      * 
      * @return {import('@tensorflow/tfjs').Tensor2D}
-     *   Onehot array as tensor.
+     *   Values as a tensor
      */
     convert(data) {
-        let onehot = [];
-        let direction = data.shift()[0]
-        for (let i = 1; i <= 4; i++) {
-            if (i == direction) {
-                onehot.push(1);
-                continue;
-            }
-            onehot.push(0);
+        let tensor = [];
+        let direction = data.shift();
+        if (direction == 1) {
+            tensor.push(0, 0);
+        } else if (direction == 2) {
+            tensor.push(0, 1);
+        } else if (direction == 3) {
+            tensor.push(1, 0);
+        } else if (direction == 4) {
+            tensor.push(1, 1);
         }
-        let snake = data.shift();
-        onehot.push(snake[0] / settings.canvasSize, snake[1] / settings.canvasSize);
-        let foodDirection = data.shift();
-        onehot.push(foodDirection[0], foodDirection[1]);
+        tensor.push(...data.shift());
+        tensor.push(...data.shift());
         for (let i = 0; i < data.length; i++) {
-            if (data[i][0] == settings.state.food) {
-                onehot.push(0, 1, data[i][1] / settings.canvasSize);
-            } else if (data[i][0] == settings.state.queue) {
-                onehot.push(1, 0, data[i][1] / settings.canvasSize);
-            } else {
-                onehot.push(0, 0, 0);
-            }
+            tensor.push(data[i][0], data[i][1] / settings.canvasSize);
         }
-        return tf.tensor2d(onehot, [1, this.inputLayerNodes]);
+        return tf.tensor2d(tensor, [1, this.inputLayerNodes]);
     }
 }
 

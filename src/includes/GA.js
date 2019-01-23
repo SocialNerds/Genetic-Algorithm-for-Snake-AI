@@ -148,11 +148,6 @@ class GA {
             newGenerationSnakeGameArray.push(this.mutate(topSnakeGames[0]));
         }
 
-        // Create completely new games.
-        for (let i = 0; i < settings.randomSnakeChildren; i++) {
-            newGenerationSnakeGameArray.push(new SnakeGame());
-        }
-
         // Create crossovers from top games.
         for (let i = 0; i < settings.population - settings.topSnakeChildren - settings.randomSnakeChildren; i++) {
             let childSnakeGame = this.crossover(topSnakeGames);
@@ -162,6 +157,11 @@ class GA {
                 this.helper.destroyGame(oldChildSnakeGame);
             }
             newGenerationSnakeGameArray.push(childSnakeGame);
+        }
+
+        // Create completely new games.
+        for (let i = 0; i < settings.randomSnakeChildren; i++) {
+            newGenerationSnakeGameArray.push(new SnakeGame());
         }
 
         this.helper.destroyGames(snakeGameArray);

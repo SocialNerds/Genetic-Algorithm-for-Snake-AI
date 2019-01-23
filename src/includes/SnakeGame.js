@@ -134,21 +134,19 @@ class SnakeGame {
     getState() {
         let state = [];
 
-        // Helper variable to get state of snake's adjacent grid boxes.
-        let currentState = null;
-
         // Get snake direction.
-        state.push([this.snake.direction]);
-
-        // Get snake coordinates.
-        state.push([this.snake.x, this.snake.y]);
+        state.push(this.snake.direction);
 
         // Set a generic dicection of the food in relation to the snake (head).
         state.push([
-            this.snake.x > this.food.x ? -1 : 1,
-            this.snake.y > this.food.y ? -1 : 1
+            this.snake.y > this.food.y ? 1 : 0,
+            this.snake.x < this.food.x ? 1 : 0,
+            this.snake.y < this.food.y ? 1 : 0,
+            this.snake.x > this.food.x ? 1 : 0
         ]);
 
+        // Helper variable to get state of snake's adjacent grid boxes.
+        let currentState = null;
         // Get what is above.
         currentState = null;
         if (this.snake.y >= settings.step) {
