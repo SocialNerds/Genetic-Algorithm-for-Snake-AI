@@ -6,6 +6,7 @@ class Snake {
      * Creates a new snake for current game.
      */
     constructor() {
+        this.gridNumber = settings.canvasSize / settings.step;
         this.reset();
     }
 
@@ -13,8 +14,8 @@ class Snake {
      * Reset snake.
      */
     reset() {
-        this.x = 0;
-        this.y = 0;
+        this.x = Math.floor(Math.random() * this.gridNumber) * settings.step;;
+        this.y = Math.floor(Math.random() * this.gridNumber) * settings.step;;
         this.queue = [];
         this.initializeDirection();
         this.crashed = false;
@@ -131,7 +132,8 @@ class Snake {
                 this.queue[i].x,
                 this.queue[i].y
             )) {
-                return true;
+                this.setCrashed(true)
+                return;
             }
         }
     }

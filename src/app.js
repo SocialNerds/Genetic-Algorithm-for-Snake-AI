@@ -40,49 +40,36 @@ function stopGame() {
  * Gameloop function.
  */
 function game() {
-    if (currentFrame <= settings.gameFrames) {
-        snakeGameArray.forEach(currentSnakeGame => {
-            if (!currentSnakeGame.snake.getCrashed()) {
-                currentSnakeGame.snake.setDirection(
-                    currentSnakeGame.model.predict(currentSnakeGame.getState())
-                );
+    snakeGameArray.forEach(currentSnakeGame => {
+        if (!currentSnakeGame.snake.getCrashed()) {
+            currentSnakeGame.snake.setDirection(
+                currentSnakeGame.model.predict(currentSnakeGame.getState())
+            );
 
-                if (currentSnakeGame.snake.getCapture(currentSnakeGame.food.x, currentSnakeGame.food.y)) {
-                    currentSnakeGame.snake.expand(currentSnakeGame.food.x, currentSnakeGame.food.y);
-                    currentSnakeGame.food.reset();
-                }
-                else {
-                    currentSnakeGame.snake.moveQueue();
-                }
-                currentSnakeGame.snake.move();
-
-                if (currentSnakeGame.snake.getTailCrash()) {
-                    currentSnakeGame.snake.setCrashed(true);
-                }
-
-                if (currentSnakeGame.isVisible()) {
-                    currentSnakeGame.drawCanvas();
-                    currentSnakeGame.drawFood();
-                    currentSnakeGame.drawSnake();
-                }
-
-                currentSnakeGame.updateInfo();
-                // if (currentSnakeGame.snake.queue.length == 8) {
-                //     currentSnakeGame.drawCanvas();
-                //     currentSnakeGame.drawFood();
-                //     currentSnakeGame.drawSnake();
-                //     let state = currentSnakeGame.getState();
-                //     console.log(currentSnakeGame.id);
-                //     console.log(state);
-                //     console.log(currentSnakeGame.model.convert(state).dataSync());
-                //     stopGame();
-                // }
+            if (currentSnakeGame.snake.getCapture(currentSnakeGame.food.x, currentSnakeGame.food.y)) {
+                currentSnakeGame.snake.expand(currentSnakeGame.food.x, currentSnakeGame.food.y);
+                currentSnakeGame.food.reset();
             }
-        });
+            else {
+                currentSnakeGame.snake.moveQueue();
+            }
+            currentSnakeGame.snake.move();
 
-        helper.updateMainInfo(generation, currentFrame, snakeGameArray, previousGenetationScore);
-        currentFrame++;
-    } else {
+            currentSnakeGame.snake.getTailCrash();
+
+            if (currentSnakeGame.isVisible()) {
+                currentSnakeGame.drawCanvas();
+                currentSnakeGame.drawFood();
+                currentSnakeGame.drawSnake();
+            }
+
+            currentSnakeGame.updateInfo();
+        }
+    });
+    helper.updateMainInfo(generation, currentFrame, snakeGameArray, previousGenetationScore);
+    currentFrame++;
+
+    if (currentFrame > settings.gameFrames) {
         stopGame();
         // Keep total score for the next generation.
         previousGenetationScore = helper.getTotalScore(snakeGameArray);

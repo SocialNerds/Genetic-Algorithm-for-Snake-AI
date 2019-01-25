@@ -28,13 +28,9 @@ class Food {
             this.x = Math.floor(Math.random() * this.gridNumber) * settings.step;
             this.y = Math.floor(Math.random() * this.gridNumber) * settings.step;
 
-            // Check that there is no confict.
-            if (this.x == this.snake.x && this.y == this.snake.y) {
-                conflict = true;
-                continue;
-            }
-            for (let i = 0; i < this.snake.queue.length; i++) {
-                if (this.x == this.snake.queue[i].x && this.y == this.snake.queue[i].y) {
+            let occupied = [[this.snake.x, this.snake.y], ...this.snake.queue];
+            for (let i = 0; i < occupied.length; i++) {
+                if (this.x == occupied[i].x && this.y == occupied[i].y) {
                     conflict = true;
                     break;
                 }

@@ -161,7 +161,7 @@ class GA {
      *   New weight.
      */
     randomGaussian(weight) {
-        if (Math.random() < 0.05) {
+        if (Math.random() < 0.1) {
             let offset = function () {
                 let w, x1, x2;
                 do {
