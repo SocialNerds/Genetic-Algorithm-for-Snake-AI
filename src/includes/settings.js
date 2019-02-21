@@ -1,27 +1,27 @@
 export const settings = {
     // Population of snakes. Minimum topSnakeChildren + randomSnakeChildren.
-    population: 500,
+    population: 2000,
     // Number of children to evolve from the top snake.
-    topSnakeChildren: 3,
+    topSnakeChildren: 20,
     // Number of children with new random gene.
-    randomSnakeChildren: 100,
+    randomSnakeChildren: 50,
     // Number of top parents for the next generation.
-    topParentsGenePool: 10,
+    topParentsGenePool: 5,
     // Grid size.
     step: 20,
     // Each game canvas size. It has to be multiple of step.
-    canvasSize: 300,
+    canvasSize: 400,
     // Lifecycle of each run.
-    gameFrames: 400,
+    gameFrames: 200,
     // Interval of game loop.
     interval: 1,
     // Games to show.
-    gamesShowing: 8,
+    gamesShowing: 6,
     // NN settings.
-    hiddenLayerNodes: 14,
+    hiddenLayerNodes: 32,
     // States reference.
     state: {
-        food: 1,
-        queue: -1
+        wall: [1, 0],
+        queue: [0, 1]
     }
 };

@@ -20,7 +20,7 @@ class Snake {
         this.initializeDirection();
         this.crashed = false;
     }
-    
+
     /**
      * Initialize a random direction.
      */
@@ -37,36 +37,16 @@ class Snake {
             return;
         }
         if (this.direction == 1) {
-            if (this.y <= 0) {
-                this.y = settings.canvasSize - settings.step;
-            }
-            else {
-                this.y -= settings.step;
-            }
+            this.y -= settings.step;
         }
         else if (this.direction == 2) {
-            if (this.x >= settings.canvasSize - settings.step) {
-                this.x = 0;
-            }
-            else {
-                this.x += settings.step;
-            }
+            this.x += settings.step;
         }
         else if (this.direction == 3) {
-            if (this.y >= settings.canvasSize - settings.step) {
-                this.y = 0;
-            }
-            else {
-                this.y += settings.step;
-            }
+            this.y += settings.step;
         }
         else if (this.direction == 4) {
-            if (this.x <= 0) {
-                this.x = settings.canvasSize - settings.step;
-            }
-            else {
-                this.x -= settings.step;
-            }
+            this.x -= settings.step;
         }
     }
 
@@ -120,9 +100,6 @@ class Snake {
 
     /**
      * Get if snake has crashed to its tail.
-     * 
-     * @return {boolean}
-     *   True if it has crashed.
      */
     getTailCrash() {
         for (let i = 0; i < this.queue.length; i++) {
@@ -132,9 +109,22 @@ class Snake {
                 this.queue[i].x,
                 this.queue[i].y
             )) {
-                this.setCrashed(true)
+                this.setCrashed(true);
                 return;
             }
+        }
+    }
+
+    /**
+     * Get if snake has crashed to the wall.
+     */
+    getWallCrash() {
+        let up = this.y <= 0;
+        let right = this.x >= settings.canvasSize - settings.step;
+        let down = this.y >= settings.canvasSize - settings.step;
+        let left = this.x <= 0;
+        if (up || right || down || left) {
+            this.setCrashed(true);
         }
     }
 

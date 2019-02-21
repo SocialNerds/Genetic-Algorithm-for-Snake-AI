@@ -8,7 +8,7 @@ class Model {
      */
     constructor() {
         let outputLayerNodes = 4;
-        this.inputLayerNodes = 14;
+        this.inputLayerNodes = 11;
         this.inputWeights = tf.randomNormal([this.inputLayerNodes, settings.hiddenLayerNodes]);
         this.outputWeights = tf.randomNormal([settings.hiddenLayerNodes, outputLayerNodes]);
     }
@@ -23,15 +23,15 @@ class Model {
      *   Next direction of the snake. 1 for up, 2 for right etc.
      */
     predict(data) {
-        let output;
+        let direction;
         tf.tidy(() => {
             let inputLayer = this.convert(data);
             let hiddenLayer = inputLayer.matMul(this.inputWeights).sigmoid();
             let outputLayer = hiddenLayer.matMul(this.outputWeights).sigmoid();
-            output = outputLayer.dataSync();
+            direction = outputLayer.dataSync();
         });
 
-        return output;
+        return direction;
     }
 
     /**
@@ -45,20 +45,8 @@ class Model {
      */
     convert(data) {
         let tensor = [];
-        let direction = data.shift();
-        if (direction == 1) {
-            tensor.push(0, 0);
-        } else if (direction == 2) {
-            tensor.push(0, 1);
-        } else if (direction == 3) {
-            tensor.push(1, 0);
-        } else if (direction == 4) {
-            tensor.push(1, 1);
-        }
-        tensor.push(...data.shift());
-        tensor.push(...data.shift());
         for (let i = 0; i < data.length; i++) {
-            tensor.push(data[i][0], data[i][1] / settings.canvasSize);
+            tensor.push(...data[i]);
         }
         return tf.tensor2d(tensor, [1, this.inputLayerNodes]);
     }

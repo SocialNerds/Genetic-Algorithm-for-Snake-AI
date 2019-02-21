@@ -56,6 +56,7 @@ function game() {
             currentSnakeGame.snake.move();
 
             currentSnakeGame.snake.getTailCrash();
+            currentSnakeGame.snake.getWallCrash();
 
             if (currentSnakeGame.isVisible()) {
                 currentSnakeGame.drawCanvas();
@@ -70,12 +71,10 @@ function game() {
     currentFrame++;
 
     if (currentFrame > settings.gameFrames) {
-        stopGame();
         // Keep total score for the next generation.
         previousGenetationScore = helper.getTotalScore(snakeGameArray);
         snakeGameArray = ga.createNewGeneration(snakeGameArray);
         helper.setVisibleSnakeGames(snakeGameArray);
-        startGame();
         currentFrame = 1;
         generation++;
     }

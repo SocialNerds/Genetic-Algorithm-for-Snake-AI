@@ -68,12 +68,12 @@ class GA {
         let parentWeightsIndexA = Math.floor(Math.random() * weightsArray.length);
         let parentWeightsIndexB = Math.floor(Math.random() * weightsArray.length);
 
-        let mid = Math.floor(Math.random() * weightsArray[parentWeightsIndexA].inputWeights.length);
-        let childInputWeights = [...weightsArray[parentWeightsIndexA].inputWeights.slice(0, mid),
-        ...weightsArray[parentWeightsIndexB].inputWeights.slice(mid, weightsArray[parentWeightsIndexB].inputWeights.length)];
-        mid = Math.floor(mid * weightsArray[parentWeightsIndexA].outputWeights.length / weightsArray[parentWeightsIndexA].inputWeights.length);
-        let childOutputWeights = [...weightsArray[parentWeightsIndexA].outputWeights.slice(0, mid),
-        ...weightsArray[parentWeightsIndexB].outputWeights.slice(mid, weightsArray[parentWeightsIndexB].outputWeights.length)];
+        let midInput = Math.floor(Math.random() * weightsArray[parentWeightsIndexA].inputWeights.length);
+        let childInputWeights = [...weightsArray[parentWeightsIndexA].inputWeights.slice(0, midInput),
+        ...weightsArray[parentWeightsIndexB].inputWeights.slice(midInput, weightsArray[parentWeightsIndexB].inputWeights.length)];
+        let midOutput = Math.floor(midInput * weightsArray[parentWeightsIndexA].outputWeights.length / weightsArray[parentWeightsIndexA].inputWeights.length);
+        let childOutputWeights = [...weightsArray[parentWeightsIndexA].outputWeights.slice(0, midOutput),
+        ...weightsArray[parentWeightsIndexB].outputWeights.slice(midOutput, weightsArray[parentWeightsIndexB].outputWeights.length)];
 
         let childSnakeGame = new SnakeGame();
 
@@ -161,7 +161,7 @@ class GA {
      *   New weight.
      */
     randomGaussian(weight) {
-        if (Math.random() < 0.1) {
+        if (Math.random() < 0.05) {
             let offset = function () {
                 let w, x1, x2;
                 do {
