@@ -4,7 +4,8 @@ We use TensorFlow.js as a base to create multiple neural networks for Snake game
 Then we use neuroevolution to optimize the neural networks for multiple generations.
 
 # Check the full explanation video (GR)
-*Pending*
+[![Γενετικός Αλγόριθμος με TensorFlow.js & Gaming AI, #76 Live
+](https://img.youtube.com/vi/FyglDUdCqCk/0.jpg)](https://www.youtube.com/watch?v=FyglDUdCqCk)
 
 # Installation
 Requirements
